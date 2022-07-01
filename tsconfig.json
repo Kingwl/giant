@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "module": "commonjs",
+        "target": "esnext",
+        "declaration": true,
+        "sourceMap": true,      
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "outDir": "dist",
+    },
+    "include": [
+        "src"
+    ]
+}
