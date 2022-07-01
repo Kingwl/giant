@@ -6,9 +6,15 @@ export async function push(title: string, desp?: string) {
     throw new Error("serverToken is required");
   }
   const url = `https://sctapi.ftqq.com/${token}.send`;
-  const resp = await axios.post(url, {
-    title,
-    desp,
-  });
+  const resp = await axios.post(
+    url,
+    {},
+    {
+      params: {
+        title,
+        desp,
+      },
+    }
+  );
   return resp.data;
 }
