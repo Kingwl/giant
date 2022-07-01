@@ -20,6 +20,7 @@
 	},
 	"scripts": {
 		"build": "tsc",
+		"test": "esno ./src/main.ts",
 		"format-fix": "prettier \"./{script,src}/**/*.ts\" --write"
 	}
 }

@@ -2,6 +2,7 @@ import "dotenv/config";
 import { create } from "./index";
 import type { Options } from "./types";
 import { log, parseList, tryParseNumber } from "./utils";
+import { push } from "./push";
 
 function loadOptions(): Options {
   const skus = process.env.skus;
@@ -37,10 +38,25 @@ async function main() {
   const options = loadOptions();
   log("加载配置完成");
 
+  const visited = new Set<string>();
   const { loadShopList, pollSkuStatus } = await create(options, (sku, shop) => {
     console.error(`${shop.name} ${sku} 库存有货!!!`);
+    const key = `${sku}-${shop.code}`;
+    if (visited.has(key)) {
+      console.error("重复检查库存");
+      return;
+    }
+    visited.add(key);
+
+    const title = `${shop.name} ${sku} 库存有货!!!`;
+    push(title);
   });
   const shops = await loadShopList();
+
+  setInterval(() => {
+    visited.clear();
+  }, 1 * 60 * 60);
+
   await pollSkuStatus(shops);
 }
 
