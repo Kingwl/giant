@@ -13,6 +13,7 @@ function loadOptions(): Options {
   const perPage = process.env.perPage;
   const interval = process.env.interval;
   const maxRetry = process.env.maxRetry;
+  const maxLoop = process.env.maxLoop;
   const randomInterval = process.env.randomInterval;
 
   if (!userId) {
@@ -30,6 +31,7 @@ function loadOptions(): Options {
     userId,
     interval: tryParseNumber(interval),
     maxRetry: tryParseNumber(maxRetry),
+    maxLoop: tryParseNumber(maxLoop),
     randomInterval: tryParseNumber(randomInterval),
   };
 }
@@ -53,11 +55,13 @@ async function main() {
   });
   const shops = await loadShopList();
 
-  setInterval(() => {
+  const timer = setInterval(() => {
     visited.clear();
   }, 1 * 60 * 60);
 
   await pollSkuStatus(shops);
+
+  clearInterval(timer);
 }
 
 main();

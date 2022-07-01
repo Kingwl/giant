@@ -20,7 +20,11 @@ export async function create(
     const { userId, skus } = options;
     const countMap: Record<string, number> = {};
 
-    while (true) {
+    let loop = 0;
+    const maxLoop = options.maxLoop ?? Infinity;
+    while (loop < maxLoop) {
+      loop++;
+
       for (const sku of skus) {
         for (const shop of shops) {
           await worker(sku, shop);

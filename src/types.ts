@@ -35,6 +35,7 @@ export interface Options {
   interval?: number;
   randomInterval?: number;
   maxRetry?: number;
+  maxLoop?: number;
 }
 
 export type SucceedCallback = (sku: string, shop: Shop) => void;
