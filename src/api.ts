@@ -4,6 +4,7 @@ import type {
   SkuStockResponse,
   ShopListOptions,
   ShopListResponse,
+  RefreshTokenResponse,
 } from "./types";
 
 export async function getSkuStock(sku: string, shopno: string, userId: string) {
@@ -39,4 +40,15 @@ export async function getShopList(page: number, options: ShopListOptions) {
     formData
   );
   return resp.data as ShopListResponse;
+}
+
+export async function refreshToken(token: string) {
+  const formData = new FormData();
+  formData.append('token', token);
+
+  const resp = await axios.post(
+    "https://e-gw.giant.com.cn/index.php/login/refresh_token",
+    formData
+  )
+  return resp.data as RefreshTokenResponse;
 }

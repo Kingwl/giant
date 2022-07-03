@@ -19,6 +19,8 @@ export interface Shop {
 
 export interface ShopListResponse extends GenericResponse<Shop[]> {}
 
+export interface RefreshTokenResponse extends GenericResponse<string> {}
+
 export interface ShopListOptions {
   province?: string;
   city?: string;

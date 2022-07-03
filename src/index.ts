@@ -1,4 +1,4 @@
-import { getSkuStock, getShopList } from "./api";
+import { getSkuStock, getShopList, refreshToken } from "./api";
 import type { Options, Shop, SucceedCallback } from "./types";
 import { createCallIntervalControl, log } from "./utils";
 
@@ -6,6 +6,7 @@ export async function create(
   options: Options,
   succeedCallback?: SucceedCallback
 ) {
+  let userId = options.userId;
   const factory = createCallIntervalControl(options.interval, options.maxRetry);
   const getSkuStockControl = factory(getSkuStock);
   const getShopListControl = factory(getShopList);
@@ -15,9 +16,14 @@ export async function create(
     pollSkuStatus,
   };
 
+  async function refreshUserId () {
+    console.log('Token 已过期，刷新 Token 中')
+    const resp = await refreshToken(userId);
+    userId = resp.data;
+  }
+
   async function pollSkuStatus(shops: Shop[]) {
     log("开始检查库存");
-    const { userId, skus } = options;
     const countMap: Record<string, number> = {};
 
     let loop = 0;
@@ -25,14 +31,14 @@ export async function create(
     while (loop < maxLoop) {
       loop++;
 
-      for (const sku of skus) {
+      for (const sku of options.skus) {
         for (const shop of shops) {
           await worker(sku, shop);
         }
       }
     }
 
-    async function worker(sku: string, shop: Shop) {
+    async function worker(sku: string, shop: Shop): Promise<void> {
       const key = `${sku}-${shop.code}`;
       const count = countMap[key] || 1;
       countMap[key] = count + 1;
@@ -40,6 +46,10 @@ export async function create(
 
       try {
         const resp = await getSkuStockControl(sku, shop.code, userId);
+        if (resp.status === 2) {
+          await refreshUserId()
+          return worker(sku, shop);
+        }
         if (resp.status !== 1) {
           throw new Error(`未知错误: ${resp.status}, ${resp.msg}`);
         }
@@ -49,7 +59,7 @@ export async function create(
           succeedCallback?.(sku, shop);
         }
       } catch (e) {
-        log(`检查库存 ${sku} ${shop.name} 出错了`);
+        log(`检查库存 ${sku} ${shop.name} 出错了`, e);
       }
     }
   }
