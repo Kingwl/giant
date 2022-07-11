@@ -46,4 +46,15 @@ jobs:
         run: pnpm install
       - name: Run test
         run: pnpm test
+        env:
+           skus                         : ${{secrets.skus}}
+           userId                       : ${{secrets.userId}}
+           province                     : ${{secrets.province}}
+           city                         : ${{secrets.city}}
+           area                         : ${{secrets.area}}
+           perPage                      : ${{secrets.perPage}}
+           interval                     : ${{secrets.interval}}
+           maxRetry                     : ${{secrets.maxRetry}}
+           maxLoop                      : ${{secrets.maxLoop}}
+           randomInterval               : ${{secrets.randomInterval}}
         
